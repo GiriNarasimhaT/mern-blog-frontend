@@ -429,6 +429,18 @@ iframe {
     border-radius: 10px;
 }
 
+pre {                               /* Code Block */
+    display: block;
+    font-size: .875em;
+    margin-bottom: 1rem;
+    margin-top: 0;
+    overflow: auto;
+    background-color: black;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+}
+
 /* Pop-up */
 .popup-card-content {
     border-radius: 10px;

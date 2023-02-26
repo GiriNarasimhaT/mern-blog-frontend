@@ -169,6 +169,7 @@ h3.no-post-text {
 
 .post .image {
     aspect-ratio: 16/9;
+    width: -webkit-fill-available;
     display: flex;
     overflow: hidden;
     align-items: center;
@@ -289,7 +290,7 @@ img{
     padding: 10px;
     grid-column: 2;
     max-width: 980px;
-    width: 100%;
+    width: -webkit-fill-available;
     justify-self: center;
 }
 
@@ -422,9 +423,9 @@ a svg, button svg{
 }
 
 iframe {
-    margin: auto;
+    width: -webkit-fill-available;
     aspect-ratio: 16/9;
-    min-height: 300px;
+    margin: auto;
     border-radius: 10px;
 }
 

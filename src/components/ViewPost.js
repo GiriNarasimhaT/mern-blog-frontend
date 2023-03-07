@@ -112,7 +112,13 @@ function ViewPost() {
                         </div>
                     )}
                     <div className="postcover">
-                        <img src={`${process.env.REACT_APP_BACKEND_URL}/${postdata.cover}`} alt="" />
+                        <img 
+                            src={`${process.env.REACT_APP_BACKEND_URL}/${postdata.cover}`}
+                            onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = 'https://cdn-icons-png.flaticon.com/512/138/138574.png?w=740&t=st=1678194762~exp=1678195362~hmac=a2231c9bfaae4dd146f7f7605de909bc3338d65a54b776091625d7ccc04d30a6';
+                            }}
+                            alt="" />
                     </div>
                     <h5>{postdata.summary}</h5>
                     <div className="content" dangerouslySetInnerHTML={{__html:postdata.content}}/>

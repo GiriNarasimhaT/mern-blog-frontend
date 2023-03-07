@@ -53,6 +53,16 @@ function EditPost() {
 
     async function updatePost(e){
         e.preventDefault();
+        if (files && !(files[0].type.startsWith('image/'))) {
+            setMessage("Invalid image file");
+            setType(false);
+            return;
+        }
+        if (!content || content.length === 0) {
+            setMessage("Please write some content");
+            setType(false);
+            return;
+        }
         setIsLoading(true);
         const data = new FormData();
         data.set('id',id);
@@ -96,10 +106,10 @@ function EditPost() {
 
     return ( 
         <>
-            <form onSubmit={updatePost} className="editpost-form">
+            <form onSubmit={updatePost} className="editpost-form" encType='multipart/form-data'>
                 <input type="text" placeholder="Title" value={title} onChange={e=>setTitle(e.target.value)}/>
                 <input type="text" placeholder="Summary" value={summary} onChange={e=>setSummary(e.target.value)}/>
-                <input type="file" onChange={e=>setFiles(e.target.files)}/>
+                <input type="file" accept='image/*' onChange={e=>setFiles(e.target.files)}/>
                 <Editor value={content} onChange={setContent}/>
                 <button style={{marginTop:'10px'}} className="update-btn">Update Post</button>
             </form>

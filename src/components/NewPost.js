@@ -35,6 +35,11 @@ function NewPost() {
           setType(false);
           return;
         }
+        if (files && !(files[0].type.startsWith('image/'))) {
+            setMessage("Invalid image file");
+            setType(false);
+            return;
+        }
         if (!content || content.length === 0) {
             setMessage("Please write some content");
             setType(false);
@@ -79,10 +84,10 @@ function NewPost() {
 
     return ( 
         <>
-            <form onSubmit={createNewPost} className="newpost-form">
+            <form onSubmit={createNewPost} className="newpost-form" encType='multipart/form-data'>
                 <input type="title" placeholder="Title" value={title} onChange={e=>setTitle(e.target.value)} required/>
                 <input type="summary" placeholder="Summary" value={summary} onChange={e=>setSummary(e.target.value)} required/>
-                <input type="file" onChange={e=>setFiles(e.target.files)}/>
+                <input type="file" accept='image/*' onChange={e=>setFiles(e.target.files)}/>
                 <Editor value={content} onChange={setContent}/>
                 <button className='publish-btn'>Publish Post</button>
             </form>

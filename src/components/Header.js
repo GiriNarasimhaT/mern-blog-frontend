@@ -43,7 +43,7 @@ function Header() {
     return (
         <Navbar collapseOnSelect expand="lg" bg="light">
         <Container>
-        <Navbar.Brand as={Link} to="/" className="links"><img src={`${process.env.PUBLIC_URL}/logo.png`} alt="Logo" className="header-img"/> Mern Blog App</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/" className="links"><img src={`${process.env.PUBLIC_URL}/logo.png`} alt="Logo" className="logo"/> Mern Blog App</Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="me-auto"></Nav>

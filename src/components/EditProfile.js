@@ -54,11 +54,15 @@ function EditProfile() {
 
     async function updateProfile(e){
         e.preventDefault();
-        setIsLoading(true);
         if (!validateusername()) {
-          setIsLoading(false);
           return;
         }
+        if (files && !(files[0].type.startsWith('image/'))) {
+          setMessage("Invalid image file");
+          setType(false);
+          return;
+        }
+        setIsLoading(true);
         const data = new FormData();
         data.set('id',id);
         data.set('email',email);
@@ -75,7 +79,7 @@ function EditProfile() {
         }); 
 
         if (response.ok){
-            response.json().then(userInfo => {  //increases response time
+            response.json().then(userInfo => {
                 setUserInfo(userInfo);
             });
             setIsLoading(false);
@@ -120,7 +124,7 @@ function EditProfile() {
     return ( 
         <>
             <form onSubmit={updateProfile} className="editprofile-form">
-                <input type="file" onChange={e=>setFiles(e.target.files)}/>
+                <input type="file" accept='image/*' onChange={e=>setFiles(e.target.files)}/>
                 <input type="text" placeholder="Full Name" value={username} onChange={e=>setUsername(e.target.value)}/>
                 <input type="text" placeholder="Bio" value={bio} onChange={e=>setBio(e.target.value)}/>
                 <input type="text" value={email} disabled readOnly/>

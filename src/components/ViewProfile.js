@@ -8,6 +8,7 @@ import PageNotFound from './PageNotFound';
 import Post from "./Post";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Pagination from 'react-bootstrap/Pagination';
 
 function ViewProfile() {
     const [isLoading, setIsLoading] = useState(true);
@@ -110,6 +111,16 @@ function ViewProfile() {
         }
     }
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 3;
+    const totalPages = Math.ceil(posts.length / itemsPerPage);
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = posts.slice(indexOfFirstItem, indexOfLastItem);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
     if (redirect){
         return <Navigate to={'/'}/> //reloads component
         // window.location.href = "/"; //reloads page
@@ -184,9 +195,22 @@ function ViewProfile() {
                         )}
 
                         <div className="post-container author-page">
-                            {posts.length > 0 &&  posts.map(post =>(
+                            {posts.length > 0 &&  currentItems.map(post =>(
                                 <Post key={post._id} {...post}/>
                             ))}
+                            {posts.length > 3 && (
+                                <div className="pagination-div">
+                                    <Pagination>
+                                        <Pagination.First onClick={() => paginate(1)}/>
+                                        <Pagination.Prev disabled={currentPage === 1} onClick={() => paginate(currentPage - 1)}/>
+                                        {Array.from({ length: Math.ceil(posts.length / itemsPerPage) }, (_, i) => (
+                                            <Pagination.Item active={currentPage === i + 1} key={i + 1} onClick={() => paginate(i + 1)}>{i + 1}</Pagination.Item>
+                                        ))}
+                                        <Pagination.Next disabled={currentPage === totalPages} onClick={() => paginate(currentPage + 1)} />
+                                        <Pagination.Last onClick={() => paginate(Math.ceil(posts.length / itemsPerPage))}/>
+                                    </Pagination>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

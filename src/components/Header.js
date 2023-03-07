@@ -57,9 +57,10 @@ function Header() {
                                     src={`${process.env.REACT_APP_BACKEND_URL}/${userInfo.profilePicture}`} 
                                     onError={(e) => {
                                         e.target.onerror = null;
-                                        e.target.src = 'https://cdn-icons-png.flaticon.com/512/138/138574.png?w=740&t=st=1678194762~exp=1678195362~hmac=a2231c9bfaae4dd146f7f7605de909bc3338d65a54b776091625d7ccc04d30a6';
+                                        e.target.src = `${process.env.PUBLIC_URL}/assets/imagenotfound.png`;
                                     }}
-                                    alt="" className="header-img"
+                                    alt=""
+                                    className="header-img"
                                 />
                             ) : (
                                 <svg className="header-img w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">

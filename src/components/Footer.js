@@ -2,7 +2,7 @@ function Footer() {
     return ( 
         <>
             <footer>
-                <p>&copy;2023 Mern News App</p>
+                <p>&copy;2023 Mern Blog App</p>
             </footer>
         </>
      );

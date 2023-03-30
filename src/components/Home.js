@@ -33,7 +33,16 @@ function Home() {
     
     return (
         <>
-            {isLoading ? <Loading/> : 
+            {isLoading ? 
+                <>
+                    <Loading/>
+                    <div className="post-container">
+                        <h1>Welcome to Mern News App</h1>
+                        <img src="https://img.freepik.com/free-vector/hand-drawn-man-working-from-home_23-2148818123.jpg?w=740&t=st=1676899883~exp=1676900483~hmac=0e2f2096a6575ec3f955668dcc5c5ba0b542f047a5c2747ccdd81194d5bd6fdd" alt="" className="empty-home-img"/>
+                        <h3 className="no-post-text">Start Creating Posts</h3>
+                    </div>
+                </>
+                : 
                 <div className="post-container">
                     {posts.length > 0 &&  currentItems.map(post =>(
                         <Post key={post._id} {...post}/>

@@ -1,6 +1,6 @@
-import { Link, useParams,Navigate } from "react-router-dom";
-import { useEffect,useState,useContext } from "react";
-import { formatISO9075 } from "date-fns";
+import { Link, useParams, Navigate } from "react-router-dom";
+import { useEffect, useState, useContext, useRef } from "react";
+import { format } from "date-fns";
 import { UserContext } from "../UserContext";
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
@@ -12,68 +12,142 @@ import 'react-toastify/dist/ReactToastify.css';
 function ViewPost() {
     const [isLoading, setIsLoading] = useState(true);
     const [postdata, setPostdata] = useState(null);
-    const {userInfo} = useContext(UserContext);
-
+    const { userInfo } = useContext(UserContext);
     const [message, setMessage] = useState('');
     const [type, setType] = useState(false);
+    const [redirect, setRedirect] = useState(false);
+    const [likeCount, setLikeCount] = useState(0);
+    const [comments, setComments] = useState([]);
+    const [text, setText] = useState('');
+    const commentRef = useRef(null);
 
     useEffect(() => {
-        if (message){
+        if (message) {
             if (type)
-            toast.success(message);
-            else{
-            toast.error(message);
+                toast.success(message);
+            else {
+                toast.error(message);
             }
             setMessage('');
         }
     }, [message]);
-    
-    const {id} = useParams();
+
+    const { id } = useParams();
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_BACKEND_URL}/post/${id}`).then(response=>{
-            response.json().then(postdata=>{
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/post/${id}`).then(response => {
+            response.json().then(postdata => {
                 setIsLoading(false);
                 setPostdata(postdata);
+                setLikeCount(postdata.likecount);
+                setComments(postdata.comments);
             });
-        }); 
-    },[id]);
+        });
+    }, [id]);
 
     // Delete post
-    const [redirect, setRedirect] = useState(false);
-    async function deletePost(e){
+    async function deletePost(e) {
         e.preventDefault();
         setIsLoading(true);
         const data = new FormData();
-        data.set('id',id);
+        data.set('id', id);
 
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/delete`,{
-            method:'DELETE',
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/delete`, {
+            method: 'DELETE',
             body: data,
             credentials: 'include',
         });
 
-        if (response.ok){
+        if (response.ok) {
             setIsLoading(false);
             setRedirect(true);
             setMessage("Post Deleted Successfully");
             setType(true);
         }
-        else{
+        else {
             setIsLoading(false);
             setMessage("Post Delete Failed");
             setType(false);
         }
     }
 
-    if (redirect){
-        return <Navigate to={'/'}/>
+    const [viewed, setViewed] = useState(false);
+    useEffect(() => {
+      const viewedIds = localStorage.getItem('viewedIds') ? localStorage.getItem('viewedIds').split(',') : [];
+      if (!viewedIds.includes(id)) {
+        setViewed(true);
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/post/${id}/viewcount`, {
+          method: 'PUT',
+          credentials: 'include',
+        });
+        localStorage.setItem('viewedIds', [...viewedIds, id].join(','));
+      }
+    }, [id]);
+    
+    const likedIds = localStorage.getItem('likedIds') ? localStorage.getItem('likedIds').split(',') : [];
+    const [liked, setLiked] = useState(likedIds.includes(id));
+    const toggleLike =async () => {
+        if (!liked) {
+            setLiked(true);
+            setLikeCount(likeCount + 1);
+            fetch(`${process.env.REACT_APP_BACKEND_URL}/post/${id}/likecount`, {
+                method: 'PUT',
+                credentials: 'include',
+            });
+            localStorage.setItem('likedIds', [...likedIds, id].join(','));
+        } else {
+            setLiked(false);
+            setLikeCount(likeCount - 1);
+            fetch(`${process.env.REACT_APP_BACKEND_URL}/post/${id}/unlikecount`, {
+                method: 'PUT',
+                credentials: 'include',
+            });
+            localStorage.setItem('likedIds', likedIds.filter((postId) => postId !== id).join(','));
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/post/${id}/comments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            })
+            .then(response => {
+                response.json().then(post => {
+                    setText('');
+                    setComments(post.comments);
+                    setMessage("Comment added Successfully");
+                    setType(true);
+            })});
+
+            if (!res.ok) {
+                setMessage("Failed to add comment");
+                setType(false);
+            }
+
+            const data = await res.json();
+            console.log(data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const scrollToComment = () => {
+        commentRef.current.scrollIntoView({ behavior: "smooth" });
+        commentRef.current.focus();
+    };
+
+    if (redirect) {
+        return <Navigate to={'/'} />
     }
 
     if (isLoading) {
         return <Loading />;
     }
 
-    if (!postdata.title) return (<PageNotFound/>);
+    if (!postdata.title) return (<PageNotFound />);
 
     return (
                 <div className="viewpost">
@@ -82,7 +156,9 @@ function ViewPost() {
                         <Link to={`/viewprofile/${postdata.author?._id ?? ''}`} className="author">
                             @{postdata.author?.username ?? 'Unknown'}
                         </Link>
-                    } | <time>{formatISO9075(new Date(postdata.createdAt))}</time>
+                    } | <time>Last modified : {format(new Date(postdata.updatedAt), 'MMM d, yyyy')}</time>
+                    | <time>Published : {format(new Date(postdata.createdAt), 'MMM d, yyyy')}</time> 
+                    | <span className="view-count"> Views : {postdata.viewcount}</span>
                     </div>
                     {userInfo?.id===postdata.author?._id && postdata.author?._id && (
                         <div className="edit-row">
@@ -120,8 +196,41 @@ function ViewPost() {
                             }}
                             alt="" />
                     </div>
-                    <h5>{postdata.summary}</h5>
+                    {/* <h5>{postdata.summary}</h5> */}
                     <div className="content" dangerouslySetInnerHTML={{__html:postdata.content}}/>
+
+                    <form onSubmit={handleSubmit} className="comment-sec">
+                        <br/><h3>Comments</h3><br/>
+                        <textarea type="text" placeholder="Write a comment" value={text} onChange={(e)=>setText(e.target.value)} ref={commentRef} required/><br/>
+                        <button type="submit" className='comment-btn'>Add Comment</button><br/>
+                    </form>
+
+                    <div>
+                        {comments.map(comment => (
+                        <div className="comments" key={comment._id}>
+                            <p className="comment">{comment.text}</p>
+                            <p className="comment-time">{new Date(comment.created).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })}</p>
+                        </div>
+                        ))}
+                    </div>
+                    <br/>
+
+                    <span className="action-btns-overlay">
+                        <span className="action-btns-container">
+                            <span className="rbtn">
+                                <input type="checkbox" id="favorite" name="favorite-checkbox" value="favorite-button" checked={liked}/>
+                                <label htmlFor="favorite" className="container" onClick={toggleLike}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                    <span>{likeCount}</span>
+                                </label>
+                            </span>
+                            <span className="action-btn-sep"></span>
+                            <span className="rbtn" onClick={() => scrollToComment()}>
+                                <svg width="20px" height="20px" viewBox="0 0 24.00 24.00" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g clip-path="url(#clip0_429_11233)"> <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 13.4876 3.36093 14.891 4 16.1272L3 21L7.8728 20C9.10904 20.6391 10.5124 21 12 21Z" stroke="#ffffff" stroke-width="1.464" stroke-linecap="round" stroke-linejoin="round"></path> </g> <defs> <clipPath id="clip0_429_11233"> <rect width="24" height="24" fill="white"></rect> </clipPath> </defs> </g></svg>
+                                <span> {comments.length}</span>
+                            </span>
+                        </span>
+                    </span>
                 </div>
             );
 }

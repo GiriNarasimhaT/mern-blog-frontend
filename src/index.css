@@ -317,6 +317,14 @@ img{
     padding-right: 20px;
 }
 
+.view-count{
+  text-align: left;
+  display: inline-flex;
+  font-size: 0.8rem;
+  color: #aaa;
+  padding-right: 20px;
+}
+
 .viewpost .author-row{
     padding-left: 5px;
     margin-bottom: 20px;
@@ -334,12 +342,165 @@ img{
     line-height: 1.6rem;
 }
 
-
-
 .viewpost .edit-row{
     margin-bottom: 20px;
     display: inline-flex;
     gap: 10px;
+}
+
+.action-btns-overlay{
+  box-sizing: inherit;
+  position: sticky;
+  display: flex;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 300ms ease 0s;
+  z-index: 400;
+  bottom: 16px;
+}
+
+.action-btns-container{
+  color: white;
+  font-weight: 400;
+  box-sizing: inherit;
+  align-items: center;
+  display: flex;
+  border-radius: 20px;
+  background-color: #903cfedc;
+  border: 2px solid #903cfe;
+  padding: 0px 14px 0px 16px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 10px 0px;
+  height: 40px;
+  transform: translateY(0px);
+}
+
+.rbtn{
+  color: white;
+  font-weight: 400;
+  box-sizing: inherit;
+  position: relative;
+  margin-right: 4px;
+  cursor: pointer;
+}
+
+.action-btn-sep{
+  color: white;
+  display: block;
+  border-right: 2px solid rgba(255, 255, 255, 0.327);
+  margin: 0px 20px;
+  height: 25px;
+}
+
+.action-btns-container label {
+  display: flex;
+  text-align: end;
+  width: -moz-fit-content !important;
+  width: fit-content !important;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  color: white;
+ }
+
+.action-btns-container .container{
+  padding: unset;
+ }
+ 
+.action-btns-container input {
+  display: none;
+ }
+ 
+.action-btns-container input:checked + label svg {
+  fill: hsl(0deg 100% 50%);
+  stroke: hsl(0deg 100% 50%);
+  animation: heartButton 1s;
+ }
+ 
+ @keyframes heartButton {
+  0% {
+   transform: scale(1);
+  }
+ 
+  25% {
+   transform: scale(1.3);
+  }
+ 
+  50% {
+   transform: scale(1);
+  }
+ 
+  75% {
+   transform: scale(1.3);
+  }
+ 
+  100% {
+   transform: scale(1);
+  }
+ }
+ 
+.action-btns-container input + label .action {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+ }
+ 
+.action-btns-container input + label .action span {
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 1;
+  grid-row-end: 1;
+  transition: all .5s;
+ }
+ 
+.action-btns-container input + label .action span.option-1 {
+  transform: translate(0px,0%);
+  opacity: 1;
+ }
+ 
+.action-btns-container input:checked + label .action span.option-1 {
+  transform: translate(0px,-100%);
+  opacity: 0;
+ }
+ 
+.action-btns-container input + label .action span.option-2 {
+  transform: translate(0px,100%);
+  opacity: 0;
+ }
+ 
+.action-btns-container input:checked + label .action span.option-2 {
+  transform: translate(0px,0%);
+  opacity: 1;
+ }
+
+.comment-sec textarea {
+  resize: vertical;
+  width: -webkit-fill-available;
+  height: 43px;
+  border: 3px solid #903cfe;
+  border-radius: 7px;
+}
+
+/* display comments */
+.comments {
+  display: grid;
+  border: 1px solid #903cfe;
+  padding: 5px;
+  align-content: space-between;
+  margin: 5px;
+  border-radius: 5px;
+}
+
+p.comment {
+  font-size: larger;
+  color: #903cfe;
+  margin: 0;
+}
+
+p.comment-time {
+  font: menu;
+  text-align: end;
+  font-size: x-small;
+  margin: 0;
 }
 
 .editor{
@@ -517,6 +678,10 @@ footer{
         width: 40vw;
         height: 40vw;
     }
+
+    .loader span {
+      font-size: larger !important;
+    }
 }
 
 @media only screen and (max-width: 1000px) {
@@ -526,10 +691,24 @@ footer{
 }
 
 /* Loading Animation */
+.loader-container {
+  position: fixed;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.671);
+  z-index: 2;
+  cursor: pointer;
+}
+
 .loader {
     --background: linear-gradient(135deg, #8123f869, #7924e4);
     --shadow: rgba(39, 94, 254, 0.28);
-    --text: #6C7486;
+    --text: #ffffff;
     --page: rgba(255, 255, 255, 0.36);
     --page-fold: rgba(255, 255, 255, 0.52);
     --duration: 3s;
@@ -538,6 +717,7 @@ footer{
     position: relative;
     margin: auto;
     grid-column: 2;
+    z-index: auto;
   }
   
   .loader:before, .loader:after {
@@ -717,4 +897,4 @@ footer{
     95%, 100% {
       transform: rotateY(0deg);
     }
-  }  
+  }

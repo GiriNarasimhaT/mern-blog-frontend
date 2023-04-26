@@ -62,7 +62,7 @@ function Home() {
                     )}
                     {posts.length === 0 &&  
                         <>
-                            <h1>Welcome to Mern News App</h1>
+                            <h1>Welcome to Mern Blog App</h1>
                             <img src="https://img.freepik.com/free-vector/hand-drawn-man-working-from-home_23-2148818123.jpg?w=740&t=st=1676899883~exp=1676900483~hmac=0e2f2096a6575ec3f955668dcc5c5ba0b542f047a5c2747ccdd81194d5bd6fdd" alt="" className="empty-home-img"/>
                             <h3 className="no-post-text">Start Creating Posts</h3>
                         </>
